@@ -5,6 +5,7 @@
 #include <cstring>
 
 #include "Node.hpp"
+#include "TwoOpt.hpp"
 
 // constant for ease of changing input and output
 char * inFile = "test-input-1.txt";
@@ -63,8 +64,9 @@ int fileLineCount(FILE * rf) {
 			lineHasContent = 1;
 		}
 		c = fgetc(rf);
-		std::cout << c;
+		// std::cout << c;
 	}
+	fseek(rf, 0, SEEK_SET);
 	return i;
 }
 
@@ -108,9 +110,28 @@ int** setUpEdgeMatrix(Node * V, int size) {
 	for (i = 0; i < size; i++) {
 		for (j = 0; j < size; j++) {
 			E[i][j] = distance(V[i], V[j]);
+			// std::cout << "[" << E[i][j] << "] ";
 		}
+		// std::cout << std::endl;
 	}
 	return E;
+}
+
+
+void printTourToFile(FILE * fOut, int * indices, int size, int** E) {
+	int sum = 0;
+	for (int i = 0; i < size - 1; i++) {
+		sum += E[indices[i]][indices[i+1]];
+	}
+	sum += E[indices[0]][indices[size - 1]];
+	fprintf(fOut, "%d\n", sum);
+
+	for (int i = 0; i < size; i++) {
+		fprintf(fOut, "%d", indices[i]);
+		if (i != size - 1) {
+			fprintf(fOut, "\n");
+		}
+	}
 }
 
 
@@ -131,15 +152,36 @@ int main() {
 
 	// build a TSP cycle
 
+	// int ** test = (int**)malloc(sizeof(int*) * 4);
+	// for (int i = 0; i < 4; i++) {
+	// 	test[i] = (int*)malloc(sizeof(int) * 4);
+	// }
+	// test[0][0] = 0; test[0][1] = 1; test[0][2] = 3; test[0][3] = 60;
+	// test[1][0] = 1; test[1][1] = 0; test[1][2] = 2; test[1][3] = 3;
+	// test[2][0] = 3; test[2][1] = 1; test[2][2] = 0; test[2][3] = 2;
+	// test[3][0] = 60; test[3][1] = 3; test[3][2] = 2; test[3][3] = 0;
+	// int * testPath = (int*)malloc(4 * sizeof(int));
+	// for (int i = 0; i < 4; i++) {
+	// 	testPath[i] = i;
+	// }
+
+
+	int * path = (int*)malloc(count * sizeof(int));
+	for (int i = 0; i < count; i++) {
+		path[i] = i;
+	}
+
+	TwoOpt(E, path, count);
 
 	// write the cycle to a file
-
+	printTourToFile(outFD, path, count, E);
 
 	// free all the memory
 	for (int i = 0; i < count; i++) {
 		free(E[i]);
 	}
 	free(E);
+	free(path);
 	delete[] V;
 	fclose(inFD);
 	fclose(outFD);
