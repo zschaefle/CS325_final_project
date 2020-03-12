@@ -3,11 +3,12 @@
 
 #include <stdlib.h>
 #include <bits/stdc++.h>
+#include <iostream>
 
 
 class BNB_solver{
 public:
-	BNB_solver(int count);
+	BNB_solver(int n);
 	~BNB_solver();
 
 	int *final_path;

@@ -6,9 +6,10 @@
 
 #include "Node.hpp"
 #include "TwoOpt.hpp"
+#include "bound_and_branch.hpp"
 
 // constant for ease of changing input and output
-char * inFile = "test-input-1.txt";
+char * inFile = "tsp_example_1.txt";
 
 // modified read function that assumes the first
 // 'word' is an integer, and returns the integer.
@@ -171,7 +172,18 @@ int main() {
 		path[i] = i;
 	}
 
-	TwoOpt(E, path, count);
+
+	if (count < 20){
+		TwoOpt(E, path, count);
+	} else {
+		// bound and branch
+		BNB_solver bnb(count);
+		bnb.TSP(E);
+		//printTourToFile(outFD, bnb.final_path, count, E);
+		
+	}
+
+
 
 	// write the cycle to a file
 	printTourToFile(outFD, path, count, E);

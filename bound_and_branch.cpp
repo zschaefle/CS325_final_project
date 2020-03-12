@@ -1,7 +1,8 @@
 #include "bound_and_branch.hpp"
 
 
-BNB_solver::BNB_solver(int count){
+BNB_solver::BNB_solver(int n){
+    this->count = n;
     this->final_path = new int[count];
     this->visited = new bool[count];
     for(int j=0; j<count; j++){
@@ -9,7 +10,6 @@ BNB_solver::BNB_solver(int count){
     }
 
     final_res = INT_MAX;
-    this->count = count;
 }
 
 BNB_solver::~BNB_solver(){
@@ -65,30 +65,26 @@ void BNB_solver::TSPRec(int **E, int curr_bound, int curr_weight,
     { 
         // check if there is an edge from last vertex in 
         // path back to the first vertex 
-        if (E[curr_path[level-1]][curr_path[0]] != 0) 
-        { 
+        if (E[curr_path[level-1]][curr_path[0]] != 0) { 
             // curr_res has the total weight of the 
             // solution we got 
-            int curr_res = curr_weight + 
-                    E[curr_path[level-1]][curr_path[0]]; 
+            int curr_res = curr_weight + E[curr_path[level-1]][curr_path[0]]; 
   
             // Update final result and final path if 
             // current result is better. 
             if (curr_res < final_res) 
             { 
                 copyToFinal(curr_path); 
-                final_res = curr_res; 
+               final_res = curr_res; 
             } 
         } 
         return; 
     } 
-    for (int i=0; i<count; i++) 
-    { 
+    for (int i=0; i<count; i++) { 
         // Consider next vertex if it is not same (diagonal 
         // entry in adjacency matrix and not visited 
         // already) 
-        if (E[curr_path[level-1]][i] != 0 && 
-            visited[i] == false) 
+        if (E[curr_path[level-1]][i] != 0 && visited[i] == false) 
         { 
             int temp = curr_bound; 
             curr_weight += E[curr_path[level-1]][i]; 
@@ -104,23 +100,22 @@ void BNB_solver::TSPRec(int **E, int curr_bound, int curr_weight,
             // for the node that we have arrived on 
             // If current lower bound < final_res, we need to explore 
             // the node further 
-            if (curr_bound + curr_weight < final_res) 
-            { 
+            if (curr_bound + curr_weight < final_res) { 
                 curr_path[level] = i; 
                 visited[i] = true; 
   
                 // call TSPRec for the next level 
-                TSPRec(E, curr_bound, curr_weight, level+1, curr_path); 
+//                TSPRec(E, curr_bound, curr_weight, level+1, curr_path); 
             } 
             // Else we have to prune the node by resetting 
             // all changes to curr_weight and curr_bound 
-            curr_weight -= E[curr_path[level-1]][i]; 
-            curr_bound = temp; 
+//            curr_weight -= E[curr_path[level-1]][i]; 
+//            curr_bound = temp; 
   
             // Also reset the visited array 
-            memset(visited, false, sizeof(visited)); 
-            for (int j=0; j<=level-1; j++) 
-                visited[curr_path[j]] = true; 
+//            memset(visited, false, sizeof(visited)); 
+//            for (int j=0; j<=level-1; j++) 
+//                visited[curr_path[j]] = true; 
         } 
     } 
 } 
@@ -137,18 +132,18 @@ void BNB_solver::TSP(int **E)
     memset(curr_path, -1, sizeof(curr_path)); 
     memset(visited, 0, sizeof(curr_path)); 
   
-    // Compute initial bound 
-    for (int i=0; i<count; i++) 
-        curr_bound += (firstMin(E, i) + 
-                       secondMin(E, i)); 
+    // Compute initial bound
+    //std::cout << count << std::endl; 
+    //for (int i=0; i<count; i++) {
+     //   curr_bound += (firstMin(E, i) + secondMin(E, i)); 
+    //}
   
     // Rounding off the lower bound to an integer 
-    curr_bound = (curr_bound&1)? curr_bound/2 + 1 : 
-                                 curr_bound/2; 
+    //curr_bound = (curr_bound&1)? curr_bound/2 + 1 : curr_bound/2; 
   
     // We start at vertex 1 so the first vertex 
     // in curr_path[] is 0 
-    visited[0] = true; 
-    curr_path[0] = 0; 
-  	TSPRec(E, curr_bound, 0, 1, curr_path); 
+    //visited[0] = true; 
+    //curr_path[0] = 0; 
+  	//TSPRec(E, curr_bound, 0, 1, curr_path); 
 } 
