@@ -105,24 +105,25 @@ void BNB_solver::TSPRec(int **E, int curr_bound, int curr_weight,
                 visited[i] = true; 
   
                 // call TSPRec for the next level 
-//                TSPRec(E, curr_bound, curr_weight, level+1, curr_path); 
+                TSPRec(E, curr_bound, curr_weight, level+1, curr_path); 
             } 
             // Else we have to prune the node by resetting 
             // all changes to curr_weight and curr_bound 
-//            curr_weight -= E[curr_path[level-1]][i]; 
-//            curr_bound = temp; 
+            curr_weight -= E[curr_path[level-1]][i]; 
+            curr_bound = temp; 
   
             // Also reset the visited array 
-//            memset(visited, false, sizeof(visited)); 
-//            for (int j=0; j<=level-1; j++) 
-//                visited[curr_path[j]] = true; 
+            memset(visited, false, sizeof(visited)); 
+            for (int j=0; j<=level-1; j++) 
+                visited[curr_path[j]] = true; 
         } 
     } 
 } 
 
 void BNB_solver::TSP(int **E) 
 { 
-    int curr_path[count+1]; 
+    
+    int *curr_path = new int[this->count+1]; 
   
     // Calculate initial lower bound for the root node 
     // using the formula 1/2 * (sum of first min + 
@@ -133,17 +134,17 @@ void BNB_solver::TSP(int **E)
     memset(visited, 0, sizeof(curr_path)); 
   
     // Compute initial bound
-    //std::cout << count << std::endl; 
-    //for (int i=0; i<count; i++) {
-     //   curr_bound += (firstMin(E, i) + secondMin(E, i)); 
-    //}
+    
+    for (int i=0; i<count; i++) {
+        curr_bound += (firstMin(E, i) + secondMin(E, i)); 
+    }
   
     // Rounding off the lower bound to an integer 
-    //curr_bound = (curr_bound&1)? curr_bound/2 + 1 : curr_bound/2; 
+    curr_bound = (curr_bound&1)? curr_bound/2 + 1 : curr_bound/2; 
   
     // We start at vertex 1 so the first vertex 
     // in curr_path[] is 0 
-    //visited[0] = true; 
-    //curr_path[0] = 0; 
-  	//TSPRec(E, curr_bound, 0, 1, curr_path); 
+    visited[0] = true; 
+    curr_path[0] = 0; 
+  	TSPRec(E, curr_bound, 0, 1, curr_path); 
 } 

@@ -179,7 +179,7 @@ int main() {
 		// bound and branch
 		BNB_solver bnb(count);
 		bnb.TSP(E);
-		//printTourToFile(outFD, bnb.final_path, count, E);
+		printTourToFile(outFD, bnb.final_path, count, E);
 		
 	}
 
