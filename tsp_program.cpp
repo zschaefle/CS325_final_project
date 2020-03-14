@@ -118,6 +118,11 @@ int main(int argc, char * argv[]) {
 		std::strcpy(inFile, argv[1]);
 	}
 	inFD = fopen(inFile, "r");
+	if (inFD <= 0) {
+		std::cerr << inFile << " could not be opened.";
+		delete[] inFile;
+		return 1;
+	}
 	int outFileNameSize = strlen(inFile) + 6;
 	char outFile[outFileNameSize];
 	strcpy(outFile, inFile);
@@ -151,11 +156,12 @@ int main(int argc, char * argv[]) {
 		printf("Using Christofides...\n");
 		Christofides c(E, V, count);
 		path = c.makeChristofidesTour();
-	} else {
-		BNB_solver bnb(count);
-		bnb.TSP(E);
-		path = bnb.final_path;
 	}
+	// else {
+	// 	BNB_solver bnb(count);
+	// 	bnb.TSP(E);
+	// 	path = bnb.final_path;
+	// }
 
 	// record the end time
 	clock_gettime(CLOCK_REALTIME, &tsEnd);
