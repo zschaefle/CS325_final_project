@@ -7,7 +7,7 @@
 #include "TwoOpt.hpp"
 #include "Christofides.hpp"
 #include "edgeMethods.hpp"
-// #include "HeldKarpSolver.hpp"
+#include "bound_and_branch.hpp"
 
 // modified read function that assumes the first
 // 'word' is an integer, and returns the integer.
@@ -139,7 +139,7 @@ int main(int argc, char * argv[]) {
 	// build a TSP cycle
 
 	int * path;
-	if (count < 2) {
+	if (count < 5000) {
 		printf("Using 2-Opt...\n");
 		path = (int*)malloc(count * sizeof(int));
 		for (int i = 0; i < count; i++) {
@@ -151,13 +151,17 @@ int main(int argc, char * argv[]) {
 		printf("Using Christofides...\n");
 		Christofides c(E, V, count);
 		path = c.makeChristofidesTour();
+	} else {
+		BNB_solver bnb(count);
+		bnb.TSP(E);
+		path = bnb.final_path;
 	}
 
 	// record the end time
 	clock_gettime(CLOCK_REALTIME, &tsEnd);
 	// print the time it tood to do the TSP
 	printf("Took %f seconds to find the TSP solution for %s\n", (tsEnd.tv_sec - tsStart.tv_sec) + ((double)(tsEnd.tv_nsec - tsStart.tv_nsec) / 1000000000.0), inFile);
-	
+
 
 	// write the cycle to a file
 	printTourToFile(outFD, path, count, E);
