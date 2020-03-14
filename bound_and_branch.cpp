@@ -30,7 +30,7 @@ void BNB_solver::copyToFinal(int *curr_path)
 int BNB_solver::firstMin(int **E, int k){
 	int min = INT_MAX;
 	for(int i=0; i<count; i++){
-		if(E[k][i]<min && i!=k){
+		if(getEdgeFromE(E,k,i)<min && i!=k){
 			min = E[k][i];
 		}
 	}
@@ -45,13 +45,13 @@ int BNB_solver::secondMin(int **E, int i)
         if (i == j) 
             continue; 
   
-        if (E[i][j] <= first) 
+        if (getEdgeFromE(E,i,j) <= first) 
         { 
             second = first; 
-            first = E[i][j]; 
+            first = getEdgeFromE(E,i,j); 
         } 
-        else if (E[i][j] <= second && E[i][j] != first) 
-            second = E[i][j]; 
+        else if (getEdgeFromE(E,i,j) <= second && getEdgeFromE(E,i,j) != first) 
+            second = getEdgeFromE(E,i,j); 
     } 
     return second; 
 } 
@@ -65,10 +65,10 @@ void BNB_solver::TSPRec(int **E, int curr_bound, int curr_weight,
     { 
         // check if there is an edge from last vertex in 
         // path back to the first vertex 
-        if (E[curr_path[level-1]][curr_path[0]] != 0) { 
+        if (getEdgeFromE(E,curr_path[level-1],curr_path[0]) != 0) { 
             // curr_res has the total weight of the 
             // solution we got 
-            int curr_res = curr_weight + E[curr_path[level-1]][curr_path[0]]; 
+            int curr_res = curr_weight + getEdgeFromE(E,curr_path[level-1],curr_path[0]); 
   
             // Update final result and final path if 
             // current result is better. 
@@ -84,10 +84,10 @@ void BNB_solver::TSPRec(int **E, int curr_bound, int curr_weight,
         // Consider next vertex if it is not same (diagonal 
         // entry in adjacency matrix and not visited 
         // already) 
-        if (E[curr_path[level-1]][i] != 0 && visited[i] == false) 
+        if (getEdgeFromE(E, curr_path[level-1],i) != 0 && visited[i] == false) 
         { 
             int temp = curr_bound; 
-            curr_weight += E[curr_path[level-1]][i]; 
+            curr_weight += getEdgeFromE(E, curr_path[level-1],i); 
   
             // different computation of curr_bound for 
             // level 2 from the other levels 
@@ -109,7 +109,7 @@ void BNB_solver::TSPRec(int **E, int curr_bound, int curr_weight,
             } 
             // Else we have to prune the node by resetting 
             // all changes to curr_weight and curr_bound 
-            curr_weight -= E[curr_path[level-1]][i]; 
+            curr_weight -= getEdgeFromE(E, curr_path[level-1],i); 
             curr_bound = temp; 
   
             // Also reset the visited array 

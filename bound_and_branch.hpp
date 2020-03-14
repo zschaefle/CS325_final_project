@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <bits/stdc++.h>
 #include <iostream>
+#include "edgeMethods.hpp"
 
 
 class BNB_solver{
