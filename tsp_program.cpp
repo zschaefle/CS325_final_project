@@ -142,26 +142,27 @@ int main(int argc, char * argv[]) {
 	int** E = setUpEdgeMatrix(V, count);
 	printf("Done with building the edges...\n");
 	// build a TSP cycle
-
 	int * path;
-	if (count < 5000) {
-		printf("Using 2-Opt...\n");
-		path = (int*)malloc(count * sizeof(int));
-		for (int i = 0; i < count; i++) {
-			path[i] = i;
+	bool bnbIsWorking = false;
+	if (count < 1500) {
+		if (bnbIsWorking) {
+			printf("Using Branch And Bound...\n");
+			BNB_solver bnb(count);
+			bnb.TSP(E);
+			path = bnb.final_path;
+		} else {
+			printf("Using 2-Opt...\n");
+			path = (int*)malloc(count * sizeof(int));
+			for (int i = 0; i < count; i++) {
+				path[i] = i;
+			}
+			TwoOpt(E, path, count);
 		}
-
-		TwoOpt(E, path, count);		
 	} else {
 		printf("Using Christofides...\n");
 		Christofides c(E, V, count);
 		path = c.makeChristofidesTour();
 	}
-	// else {
-	// 	BNB_solver bnb(count);
-	// 	bnb.TSP(E);
-	// 	path = bnb.final_path;
-	// }
 
 	// record the end time
 	clock_gettime(CLOCK_REALTIME, &tsEnd);
