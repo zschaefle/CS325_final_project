@@ -1,5 +1,12 @@
 #include "HeldKarpSolver.hpp"
 
+// NOT USED, NOT FULLY COMMENTED.
+// dropped because I couldn't fully understand it
+// and because I couldn't understand it most of this code is raw-copied
+// and that makes me feel bad, which is another reason this isn't used.
+
+
+
 HeldKarpSolver::HeldKarpSolver() {
 	this->order = NULL;
 	this->size = 0;

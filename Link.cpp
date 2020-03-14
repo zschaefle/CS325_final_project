@@ -1,5 +1,9 @@
 #include "Link.hpp"
 
+// a linked list thing that wasn't actually ever used :/
+
+
+
 Link::Link() {
 	value = NULL;
 	next = NULL;

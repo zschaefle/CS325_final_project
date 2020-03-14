@@ -1,5 +1,8 @@
 #include "LinkSentenel.hpp"
 
+// a linked list thing that wasn't actually ever used :/
+
+
 LinkSentenel::LinkSentenel() {
 	this->first = NULL;
 	this->last = NULL;

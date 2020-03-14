@@ -52,23 +52,18 @@ int fileLineCount(FILE * rf) {
 	while (c > 0) {
 		if (c == '\n' || c < 0) {
 			if (lineHasContent == 1) {
-				// std::cout << '+' << std::endl;
 				i++;
 				lineHasContent = 0;
 			} else {
-				// std::cout << '-' << std::endl;
 				fseek(rf, 0, SEEK_SET);
 				return i;
 			}
 		}
 		else {
-			// printf("%c", c);
 			lineHasContent = 1;
 		}
 		c = fgetc(rf);
-		// std::cout << c;
 	}
-	// std::cout << "total: " << i << std::endl;
 	fseek(rf, 0, SEEK_SET);
 	return i;
 }
@@ -87,11 +82,13 @@ Node* readInPoints(FILE * fIn, int size){
 	return out;
 }
 
-
+// function to print the given tour to a file
+// does no double-checking
+// calculates the cost by itself
 void printTourToFile(FILE * fOut, int * indices, int size, int** E) {
 	int sum = 0;
+	// 
 	for (int i = 0; i < size - 1; i++) {
-		// printf("i = %d, summing.. E[%d][%d]\n", i, indices[i], indices[i+1]);
 		sum += getEdgeFromE(E, indices[i], indices[i + 1]);
 	}
 	sum += getEdgeFromE(E, indices[0], indices[size - 1]);
@@ -110,6 +107,7 @@ int main(int argc, char * argv[]) {
 	// set up input and output file descriptors
 	FILE * inFD, * outFD;
 	char * inFile = new char[FILENAME_MAX];
+	// setup the infile variable based on if one is given or not
 	if (argc == 1) {
 		// constant for ease of changing input and output
 		std::strcpy(inFile, "tsp_example_1.txt");
@@ -117,11 +115,12 @@ int main(int argc, char * argv[]) {
 		std::strcpy(inFile, argv[1]);
 	}
 	inFD = fopen(inFile, "r");
-	if (inFD <= 0) {
+	if (inFD <= 0) { // handle bad input
 		std::cerr << inFile << " could not be opened.";
 		delete[] inFile;
 		return 1;
 	}
+	// set up the rest of the variables
 	int outFileNameSize = strlen(inFile) + 6;
 	char outFile[outFileNameSize];
 	strcpy(outFile, inFile);
@@ -142,7 +141,8 @@ int main(int argc, char * argv[]) {
 	printf("Done with building the edges...\n");
 	// build a TSP cycle
 	int * path;
-	bool bnbIsWorking = false;
+	bool bnbIsWorking = false; // for if/when we get Brand-and-Bound working
+	// statements deciding what solver to use
 	if (count < 1500) {
 		if (bnbIsWorking) {
 			printf("Using Branch And Bound...\n");

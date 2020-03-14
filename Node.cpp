@@ -1,5 +1,7 @@
 #include "Node.hpp"
 
+// node object, stores the x, y, and id of vertices on the graph
+
 Node::Node() {
 	x = 0;
 	y = 0;
@@ -19,11 +21,8 @@ void Node::addEdge(int n) {
 void Node::removeOneEdge(int removeId) {
 	int removed = 0;
 	std::vector<int> outputs;
-	printf("looking for %d in node %d\n", removeId, this->id);
 	for (int i = 0; i < this->edges.size(); i++) {
-		printf("checking %d\n", this->edges[i]);
 		if (this->edges[i] == removeId && removed == 0) {
-			printf ("ignoring id %d from id %d\n", this->edges[i], this->id);
 			removed = 1;
 		} else {
 			outputs.push_back(this->edges[i]);

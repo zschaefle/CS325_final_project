@@ -1,6 +1,9 @@
 
 #include "edgeMethods.hpp"
 
+// helper methods so the 2d edge matrix E can be better
+// i.e. built 2x faster, only building half of the matrix
+
 int ** setUpEdgeMatrix(Node * V, int size) {
 	int i, j;
 
