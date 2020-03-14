@@ -2,7 +2,7 @@
 
 HeldKarpSolver::HeldKarpSolver() {
 	this->order = NULL;
-	size = 0;
+	this->size = 0;
 }
 
 HeldKarpSolver::HeldKarpSolver(int size) {
@@ -37,7 +37,7 @@ int * HeldKarpSolver::solve(int ** E) {
 	        // pick the best among them
 	        if (visited == 1 << last) {
 	            // previous vertex must have been N-1
-	            best[visited][last] = E[this->size-1][last];
+	            best[visited][last] = getEdgeFromE(E, this->size-1, last);
 	        } else {
 	            // previous vertex was one of the other ones in "visited"
 	            int prev_visited = visited ^ 1<<last;

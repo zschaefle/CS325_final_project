@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <bits/stdc++.h>
 
+#include "edgeMethods.hpp"
+
 class HeldKarpSolver {
 public:
 	HeldKarpSolver();

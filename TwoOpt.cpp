@@ -45,8 +45,8 @@ int calcDist(int** E, int * tour, int size) {
 	int output = 0;
 	int i;
 	for (i = 0; i < size - 1; i++) {
-		output += E[tour[i]][tour[i+1]];
+		output += getEdgeFromE(E, tour[i], tour[i+1]);
 	}
-	output += E[tour[i]][tour[0]];
+	output += getEdgeFromE(E, tour[i], tour[0]);
 	return output;
 }

@@ -1,14 +1,13 @@
 #include <cstdio>
 #include <cstdlib>
-#include <cmath>
 #include <iostream>
 #include <cstring>
 
 #include "Node.hpp"
 #include "TwoOpt.hpp"
-
-// constant for ease of changing input and output
-char * inFile = "test-input-1.txt";
+#include "Christofides.hpp"
+#include "edgeMethods.hpp"
+// #include "HeldKarpSolver.hpp"
 
 // modified read function that assumes the first
 // 'word' is an integer, and returns the integer.
@@ -53,19 +52,23 @@ int fileLineCount(FILE * rf) {
 	while (c > 0) {
 		if (c == '\n' || c < 0) {
 			if (lineHasContent == 1) {
+				// std::cout << '+' << std::endl;
 				i++;
 				lineHasContent = 0;
 			} else {
+				// std::cout << '-' << std::endl;
 				fseek(rf, 0, SEEK_SET);
 				return i;
 			}
 		}
 		else {
+			// printf("%c", c);
 			lineHasContent = 1;
 		}
 		c = fgetc(rf);
 		// std::cout << c;
 	}
+	// std::cout << "total: " << i << std::endl;
 	fseek(rf, 0, SEEK_SET);
 	return i;
 }
@@ -79,51 +82,19 @@ Node* readInPoints(FILE * fIn, int size){
 		out[i].id = readInt(fIn);
 		out[i].x = readInt(fIn);
 		out[i].y = readInt(fIn);
+		out[i].edges;
 	}
 	return out;
-}
-
-
-// finds the distance between two nodes
-int distance(Node n1, Node n2) {
-	int xPortion = n1.x - n2.x;
-	int yPortion = n1.y - n2.y;
-	xPortion = xPortion * xPortion;
-	yPortion = yPortion * yPortion;
-	int square = xPortion + yPortion;
-	double dist = sqrt(square);
-	return (int)round(dist);
-}
-
-
-// creates the matrix such that E[i][j] is
-// the distance between V[i] and V[j]
-// returns the pointer to the array
-int** setUpEdgeMatrix(Node * V, int size) {
-	int i, j;
-
-	int ** E = (int**)malloc(sizeof(int*) * (size));
-	for (i = 0; i < size; i++) {
-		E[i] = (int*)malloc(sizeof(int) * (size));
-	}
-
-	for (i = 0; i < size; i++) {
-		for (j = 0; j < size; j++) {
-			E[i][j] = distance(V[i], V[j]);
-			// std::cout << "[" << E[i][j] << "] ";
-		}
-		// std::cout << std::endl;
-	}
-	return E;
 }
 
 
 void printTourToFile(FILE * fOut, int * indices, int size, int** E) {
 	int sum = 0;
 	for (int i = 0; i < size - 1; i++) {
-		sum += E[indices[i]][indices[i+1]];
+		// printf("i = %d, summing.. E[%d][%d]\n", i, indices[i], indices[i+1]);
+		sum += getEdgeFromE(E, indices[i], indices[i + 1]);
 	}
-	sum += E[indices[0]][indices[size - 1]];
+	sum += getEdgeFromE(E, indices[0], indices[size - 1]);
 	fprintf(fOut, "%d\n", sum);
 
 	for (int i = 0; i < size; i++) {
@@ -135,9 +106,17 @@ void printTourToFile(FILE * fOut, int * indices, int size, int** E) {
 }
 
 
-int main() {
+int main(int argc, char * argv[]) {
 	// set up input and output file descriptors
 	FILE * inFD, * outFD;
+	char * inFile = new char[FILENAME_MAX];
+	if (argc == 1) {
+		// constant for ease of changing input and output
+		// std::strcpy(inFile, "test-input-7.txt");
+		std::strcpy(inFile, "tsp_example_2.txt");
+	} else {
+		std::strcpy(inFile, argv[1]);
+	}
 	inFD = fopen(inFile, "r");
 	int outFileNameSize = strlen(inFile) + 6;
 	char outFile[outFileNameSize];
@@ -145,33 +124,40 @@ int main() {
 	strcat(outFile, ".tour");
 	outFD = fopen(outFile, "w");
 
+	struct timespec tsStart;
+	struct timespec tsEnd;
+
+	// record the start
+	clock_gettime(CLOCK_REALTIME, &tsStart);
+
 	// set up variables
 	int count = fileLineCount(inFD);
 	Node * V = readInPoints(inFD, count);
+	printf("Starting building the edges...\n");
 	int** E = setUpEdgeMatrix(V, count);
-
+	printf("Done with building the edges...\n");
 	// build a TSP cycle
 
-	// int ** test = (int**)malloc(sizeof(int*) * 4);
-	// for (int i = 0; i < 4; i++) {
-	// 	test[i] = (int*)malloc(sizeof(int) * 4);
-	// }
-	// test[0][0] = 0; test[0][1] = 1; test[0][2] = 3; test[0][3] = 60;
-	// test[1][0] = 1; test[1][1] = 0; test[1][2] = 2; test[1][3] = 3;
-	// test[2][0] = 3; test[2][1] = 1; test[2][2] = 0; test[2][3] = 2;
-	// test[3][0] = 60; test[3][1] = 3; test[3][2] = 2; test[3][3] = 0;
-	// int * testPath = (int*)malloc(4 * sizeof(int));
-	// for (int i = 0; i < 4; i++) {
-	// 	testPath[i] = i;
-	// }
+	int * path;
+	if (count < 2) {
+		printf("Using 2-Opt...\n");
+		path = (int*)malloc(count * sizeof(int));
+		for (int i = 0; i < count; i++) {
+			path[i] = i;
+		}
 
-
-	int * path = (int*)malloc(count * sizeof(int));
-	for (int i = 0; i < count; i++) {
-		path[i] = i;
+		TwoOpt(E, path, count);		
+	} else {
+		printf("Using Christofides...\n");
+		Christofides c(E, V, count);
+		path = c.makeChristofidesTour();
 	}
 
-	TwoOpt(E, path, count);
+	// record the end time
+	clock_gettime(CLOCK_REALTIME, &tsEnd);
+	// print the time it tood to do the TSP
+	printf("Took %f seconds to find the TSP solution for %s\n", (tsEnd.tv_sec - tsStart.tv_sec) + ((double)(tsEnd.tv_nsec - tsStart.tv_nsec) / 1000000000.0), inFile);
+	
 
 	// write the cycle to a file
 	printTourToFile(outFD, path, count, E);
@@ -182,6 +168,7 @@ int main() {
 	}
 	free(E);
 	free(path);
+	delete[] inFile;
 	delete[] V;
 	fclose(inFD);
 	fclose(outFD);
