@@ -112,8 +112,7 @@ int main(int argc, char * argv[]) {
 	char * inFile = new char[FILENAME_MAX];
 	if (argc == 1) {
 		// constant for ease of changing input and output
-		// std::strcpy(inFile, "test-input-7.txt");
-		std::strcpy(inFile, "tsp_example_2.txt");
+		std::strcpy(inFile, "tsp_example_1.txt");
 	} else {
 		std::strcpy(inFile, argv[1]);
 	}

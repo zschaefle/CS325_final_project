@@ -1,0 +1,20 @@
+To run these programs:
+ 1. unzip all the contents of this folder into whatever directory you want to use to store these programs.
+  - required: *.cpp, *.hpp, Makefile
+  - if you do not have your own copies of the input files, you can use the included ones
+  - if you want to see the paths we've already made, view the associated .tour files
+ 2.a on a linux-based command line, run the command `make`
+ 2.b there should now be the executable file `tsp_program`
+
+tsp_program: Generates a solution to the travelling salesman problem for an input set of vertices, and outputs the length and the order of the visited nodes to another file.
+
+USE:
+`tsp_program [optional: filename.txt]`
+
+-> will read nodes from filename.txt (where filename.txt is formatted in lines of 'n x y\n', n is 0 to the number of nodes, increasing, x is the x-coord, and y is the y-coord).
+
+-> will output to filename.txt.tour, formatted such that the first line will be the total distance travelled in the solution and each subsequent line will be the nodes in order of use.
+
+-> TIMING is done by the program, starting at the moment a solver begins and ending the moment after the solver ends (ignores setup time for the adjacency matrix)
+
+-> if no file is given, the program defaults to search for and use 'tsp_example_1.txt'
